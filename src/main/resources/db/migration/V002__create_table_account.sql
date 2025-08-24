@@ -1,0 +1,11 @@
+CREATE TABLE TB_ACCOUNT (
+    id BIGINT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    account_number NVARCHAR(50) NOT NULL,
+    password NVARCHAR(255) NOT NULL,
+    account_type INT NOT NULL, -- Enum mapeado como INT
+    balance DECIMAL(19,2) NOT NULL,
+    active BIT NOT NULL DEFAULT 1,
+    user_id BIGINT NOT NULL,
+    CONSTRAINT FK_ACCOUNTS_USERS FOREIGN KEY (user_id)
+        REFERENCES TB_USER(id)
+);
