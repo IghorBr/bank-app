@@ -1,4 +1,4 @@
-package ib.api.bank.domain.model;
+package ib.api.bank.domain.model.enumerators;
 
 import ib.api.bank.domain.exception.NotFoundObjectException;
 import ib.api.bank.domain.util.BigDecimalUtils;

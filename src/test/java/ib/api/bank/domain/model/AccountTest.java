@@ -1,6 +1,7 @@
 package ib.api.bank.domain.model;
 
 import ib.api.bank.domain.exception.BankException;
+import ib.api.bank.domain.model.enumerators.AccountType;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -67,10 +68,9 @@ class AccountTest {
     void mustNotDepositNegativeAmount() {
         User user = new User("John Doe", "john@email.com", "123");
         Account account = new Account("736302", "password123", BigDecimal.valueOf(100), user);
+        BigDecimal value = BigDecimal.valueOf(-50);
 
-        assertThrows(BankException.class, () -> {
-            account.deposit(BigDecimal.valueOf(-50));
-        });
+        assertThrows(BankException.class, () -> account.deposit(value));
     }
 
     @Test
@@ -86,9 +86,8 @@ class AccountTest {
     void mustNotWithdrawNegativeAmount() {
         User user = new User("John Doe", "john@email.com", "123");
         Account account = new Account("736302", "password123", BigDecimal.valueOf(100), user);
+        BigDecimal value = BigDecimal.valueOf(-50);
 
-        assertThrows(BankException.class, () -> {
-            account.withdraw(BigDecimal.valueOf(-50));
-        });
+        assertThrows(BankException.class, () -> account.withdraw(value));
     }
 }

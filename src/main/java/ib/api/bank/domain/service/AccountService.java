@@ -14,6 +14,7 @@ public interface AccountService {
     Account deposit(BigDecimal amount);
     Account withdraw(BigDecimal amount);
     Account transferMoney(String toAccountNumber, BigDecimal amount);
+    Account newCreditCard(Account account);
 
     Optional<Account> findById(Long id);
     Optional<Account> findByAccountNumber(String accountNumber);

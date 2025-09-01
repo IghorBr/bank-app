@@ -2,9 +2,14 @@ package ib.api.bank.domain.service;
 
 import ib.api.bank.domain.exception.NotFoundObjectException;
 import ib.api.bank.domain.model.Account;
-import ib.api.bank.domain.model.AccountType;
+import ib.api.bank.domain.model.Card;
 import ib.api.bank.domain.model.User;
-import org.junit.jupiter.api.*;
+import ib.api.bank.domain.model.enumerators.AccountType;
+import ib.api.bank.domain.model.enumerators.CardType;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -13,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 
 @SpringBootTest
@@ -57,6 +63,11 @@ class AccountServiceTest {
         Assertions.assertNotNull(this.firstAccount.getAccountNumber());
         Assertions.assertEquals(7, this.firstAccount.getAccountNumber().length());
         Assertions.assertTrue(this.passwordEncoder.matches("123", this.firstAccount.getPassword()));
+        Assertions.assertFalse(this.firstAccount.getCards().isEmpty());
+
+        Card firstCard = this.firstAccount.getCards().getFirst();
+        Assertions.assertEquals(16, firstCard.getCardNumber().length());
+        Assertions.assertEquals(CardType.DEBIT, firstCard.getType());
     }
 
     @Test
@@ -83,5 +94,19 @@ class AccountServiceTest {
         Assertions.assertNotNull(this.firstAccount.getId());
         Assertions.assertEquals(50., this.firstAccount.getBalance().doubleValue());
         Assertions.assertEquals(150., this.secondAccount.getBalance().doubleValue());
+    }
+
+    @Test
+    void testNewCreditCard() {
+        this.firstAccount = this.accountService.newCreditCard(this.firstAccount);
+        BigDecimal limit = this.firstAccount.getAccountType().getMaxLimit().divide(BigDecimal.valueOf(2), RoundingMode.HALF_EVEN);
+
+        Assertions.assertNotNull(this.firstAccount.getId());
+        Assertions.assertEquals(2, this.firstAccount.getCards().size());
+
+        Card secondCard = this.firstAccount.getCards().getLast();
+        Assertions.assertEquals(16, secondCard.getCardNumber().length());
+        Assertions.assertEquals(CardType.CREDIT, secondCard.getType());
+        Assertions.assertEquals(limit, secondCard.getMaxLimit());
     }
 }

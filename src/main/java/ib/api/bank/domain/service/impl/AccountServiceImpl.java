@@ -3,9 +3,11 @@ package ib.api.bank.domain.service.impl;
 import ib.api.bank.core.security.AccountContext;
 import ib.api.bank.domain.exception.NotFoundObjectException;
 import ib.api.bank.domain.model.Account;
+import ib.api.bank.domain.model.Card;
 import ib.api.bank.domain.model.User;
 import ib.api.bank.domain.repository.AccountRepository;
 import ib.api.bank.domain.service.AccountService;
+import ib.api.bank.domain.service.CardService;
 import ib.api.bank.domain.service.UserService;
 import ib.api.bank.domain.util.Utils;
 import jakarta.transaction.Transactional;
@@ -24,6 +26,9 @@ public class AccountServiceImpl implements AccountService {
     private final UserService userService;
     private final AccountContext accountContext;
     private final PasswordEncoder passwordEncoder;
+    private final CardService cardService;
+
+    private static final String ACCOUNT_NOT_FOUND_ERROR = "Account not found";
 
     @Override
     @Transactional
@@ -40,13 +45,18 @@ public class AccountServiceImpl implements AccountService {
         account.setUser(user);
         account.setAccountNumber(Utils.getAccountNumber());
 
+        account = this.save(account);
+
+        Card card = this.cardService.createDebitCard(account);
+        account.getCards().add(card);
+
         return this.save(account);
     }
 
     @Override
     @Transactional
     public Account deposit(BigDecimal amount) {
-        Account account = this.accountContext.loadByContext().orElseThrow(() -> new NotFoundObjectException("Account not found"));
+        Account account = this.accountContext.loadByContext().orElseThrow(() -> new NotFoundObjectException(ACCOUNT_NOT_FOUND_ERROR));
         account.deposit(amount);
 
         return this.save(account);
@@ -55,7 +65,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     public Account withdraw(BigDecimal amount) {
-        Account account = this.accountContext.loadByContext().orElseThrow(() -> new NotFoundObjectException("Account not found"));
+        Account account = this.accountContext.loadByContext().orElseThrow(() -> new NotFoundObjectException(ACCOUNT_NOT_FOUND_ERROR));
         account.withdraw(amount);
 
         return this.save(account);
@@ -65,12 +75,21 @@ public class AccountServiceImpl implements AccountService {
     @Transactional
     public Account transferMoney(String toAccountNumber, BigDecimal amount) {
         Account destinationAccount = this.accountRepository.findByAccountNumber(toAccountNumber).orElseThrow(() -> new NotFoundObjectException("Destination account not found"));
-        Account account = this.accountContext.loadByContext().orElseThrow(() -> new NotFoundObjectException("Account not found"));
+        Account account = this.accountContext.loadByContext().orElseThrow(() -> new NotFoundObjectException(ACCOUNT_NOT_FOUND_ERROR));
 
         account.withdraw(amount);
         destinationAccount.deposit(amount);
 
         this.save(destinationAccount);
+        return this.save(account);
+    }
+
+    @Override
+    @Transactional
+    public Account newCreditCard(Account account) {
+        Card card = this.cardService.createCreditCard(account);
+        account.getCards().add(card);
+
         return this.save(account);
     }
 

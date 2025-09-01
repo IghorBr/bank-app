@@ -1,6 +1,5 @@
 package ib.api.bank.domain.service;
 
-import ib.api.bank.domain.model.Account;
 import ib.api.bank.domain.model.User;
 
 import java.util.Optional;

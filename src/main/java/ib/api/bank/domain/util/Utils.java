@@ -42,4 +42,19 @@ public class Utils {
     public static String getAccountNumber() {
         return next();
     }
+
+    public static String generateCardNumber() {
+        StringBuilder sb = new StringBuilder(15);
+        for (int i = 0; i < 15; i++) {
+            sb.append(RNG.nextInt(10));
+        }
+        String first15 = sb.toString();
+        int checkDigit = luhnCheckDigit(first15);
+        return first15 + checkDigit;
+    }
+
+    public static String generateCVV() {
+        int cvv = RNG.nextInt(1000); // 0..999
+        return String.format("%03d", cvv);
+    }
 }

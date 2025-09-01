@@ -1,6 +1,7 @@
 package ib.api.bank.domain.model;
 
 import ib.api.bank.domain.exception.BankException;
+import ib.api.bank.domain.model.enumerators.AccountType;
 import ib.api.bank.domain.util.BigDecimalUtils;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -10,6 +11,8 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -34,6 +37,10 @@ public class Account implements Serializable {
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "USER_ID", nullable = false)
     private User user;
+
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Setter(AccessLevel.NONE)
+    private List<Card> cards = new ArrayList<>();
 
     public Account(String password, BigDecimal balance) {
         this.password = password;

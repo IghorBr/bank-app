@@ -1,6 +1,6 @@
 package ib.api.bank.domain.converter;
 
-import ib.api.bank.domain.model.AccountType;
+import ib.api.bank.domain.model.enumerators.AccountType;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
