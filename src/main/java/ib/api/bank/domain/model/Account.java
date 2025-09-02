@@ -66,6 +66,12 @@ public class Account implements Serializable {
         this.balance = this.balance.add(amount);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Account account)) return false;
+        return Objects.equals(getId(), account.getId()) && Objects.equals(getAccountNumber(), account.getAccountNumber());
+    }
+
     public void withdraw(BigDecimal amount) {
         if (Boolean.FALSE.equals(this.active))
             throw new BankException("Account is inactive");
@@ -74,12 +80,6 @@ public class Account implements Serializable {
             throw new BankException("Amount must be greater than zero");
         }
         this.balance = this.balance.subtract(amount);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof Account account)) return false;
-        return Objects.equals(getId(), account.getId()) && Objects.equals(getAccountNumber(), account.getAccountNumber());
     }
 
     @Override

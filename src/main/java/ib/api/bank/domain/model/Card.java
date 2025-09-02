@@ -29,6 +29,9 @@ public class Card implements Serializable {
     private BigDecimal maxLimit;
     private BigDecimal availableLimit;
 
+    private Integer dueDate = 10;
+    private Integer closingDate = 25;
+
     private CardType type;
 
     @ManyToOne
